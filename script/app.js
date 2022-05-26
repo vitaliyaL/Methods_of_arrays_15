@@ -1,22 +1,14 @@
 function randomArrayGenerator(num1, num2) {
-  const mas = [];
-  for (let i = 0; i < num1; i++) {
-    mas[i] = Math.floor(Math.random() * (num2 - 0 + 1)) + 0;
-  }
-  return mas;
+  const mas = [...Array(num1)].map((i) => 0);
+  return mas.map((i) => {
+    i = Math.round(Math.random() * num2);
+    return i;
+  });
 }
 console.log(randomArrayGenerator(10, 5));
 
 function arraySplicer(arr, str) {
-  const mas = [];
-  let j = 0;
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i] !== str) {
-      mas[j] = arr[i];
-      j++;
-    }
-  }
-  return mas;
+  return arr.filter((i) => i !== str);
 }
 let firstArray = ["sex", "drugs", "rock and roll"];
 let secondArray = ["egalite", "fraternite", "liberte"];
@@ -26,37 +18,33 @@ console.log(arraySplicer(secondArray, "mort"));
 console.log(arraySplicer(thirdArray, "muerte"));
 
 function inputArr(arr) {
-  console.log(arr);
   const mas = [];
-  for (let i = 0; i < arr.length; i++) {
-    arr[i] = arr[i].trim();
-    if (arr[i][0] === "{" && arr[i][arr[i].length - 1] === "}") {
-      mas[i] = strInObj(arr[i]);
+  arr.map((i, index) => {
+    i = i.trim();
+    if (i[0] === "{" && i[i.length - 1] === "}") {
+      mas[index] = strInObj(i);
     } else {
       try {
-        mas[i] = JSON.parse(arr[i]);
+        mas[index] = JSON.parse(i);
       } catch {
-        mas[i] = arr[i];
+        mas[index] = i;
       }
     }
-  }
+  });
   return mas;
 }
 
 function strInObj(str) {
-  const arr = str.split(",");
   const obj = {};
-  for (let i = 0; i < arr.length; i++) {
-    const mas = arr[i].replace(/{|}/, "").split(":");
-    if (mas[1] === undefined) {
-      obj[mas[0].trim()] = null;
-    } else {
-      obj[mas[0].trim()] = mas[1];
-    }
-  }
+  const arr = str.split(",").map((i) => {
+    const mas = i.replace(/{|}/, "").split(":");
+    mas[1] === undefined
+      ? (obj[mas[0].trim()] = null)
+      : (obj[mas[0].trim()] = mas[1]);
+  });
   return obj;
 }
-let arr3 = [
+let arr = [
   "[1,2,112]",
   "null",
   "{name:Moby, surName:Dick, age:42}",
@@ -65,7 +53,7 @@ let arr3 = [
   "42",
   "{dsfghjkjhjhg dfgfhgjhk}",
 ];
-console.log(inputArr(arr3));
+console.log(inputArr(arr));
 
 const arrayOfPersons = [
   {
@@ -170,7 +158,7 @@ const arrayOfPersons = [
     name: "Ella",
     surname: "Fitzgerald",
     age: 79,
-    isFrictionalCharacter: false,
+    isFictionalCharacter: false,
     isAlive: false,
     specialTrait: "Amazing voice",
     signatureSongs: [
@@ -183,101 +171,81 @@ const arrayOfPersons = [
 ];
 function nameSurnameAge(arr) {
   const mas = [];
-  for (let i = 0; i < arr.length; i++) {
+  arr.map((i, index) => {
     const obj = {};
-    arr[i].name === undefined ? (obj.name = null) : (obj.name = arr[i].name);
-    arr[i].surname === undefined
-      ? (obj.surname = null)
-      : (obj.surname = arr[i].surname);
-    arr[i].age === undefined ? (obj.age = null) : (obj.age = arr[i].age);
-    mas[i] = obj;
-  }
+    i.name === undefined ? (obj.name = null) : (obj.name = i.name);
+    i.surname === undefined ? (obj.surname = null) : (obj.surname = i.surname);
+    i.age === undefined ? (obj.age = null) : (obj.age = i.age);
+    mas[index] = obj;
+  });
   return mas.sort((a, b) => (a.surname > b.surname ? 1 : -1));
 }
 console.log(nameSurnameAge(arrayOfPersons));
 
-function sortByAge(arr) {
-  const mas = JSON.parse(JSON.stringify(arr));
-  for (let i = 0; i < mas.length; i++) {
-    if (mas[i].age === undefined) {
-      mas[i].age = null;
-    }
-  }
-  return mas.sort((a, b) => (a.age > b.age ? 1 : -1));
+function eightProp(arr) {
+  return arr
+    .filter((i) => Object.keys(i).length >= 8)
+    .sort((a, b) => (Object.keys(a).length < Object.keys(b).length ? 1 : -1));
+}
+console.log(eightProp(arrayOfPersons));
+
+function sortByAge(mas) {
+  const arr = JSON.parse(JSON.stringify(mas));
+  return arr
+    .map((i) => {
+      if (i.age === undefined) i.age = null;
+      return i;
+    })
+    .sort((a, b) => (a.age > b.age ? 1 : -1));
 }
 console.log(sortByAge(arrayOfPersons));
 
 function zodiac(arr) {
-  const mas = [];
-  let j = 0;
-  for (let i = 0; i < arr.length; i++) {
-    let flag = false;
-    for (let key in arr[i]) {
-      if (key === "zodiacSign") {
-        flag = true;
-      }
-    }
-    if (flag) {
-      mas[j++] = arr[i];
-    }
-  }
-  return mas;
+  return arr.filter((i) => i.hasOwnProperty("zodiacSign"));
 }
 console.log(zodiac(arrayOfPersons));
 
 function sortByObj(arr) {
-  const mas1 = [];
-  const mas2 = [];
-  let j = 0;
-  let k = 0;
-  for (let i = 0; i < arr.length; i++) {
-    let flag = false;
-    for (let key in arr[i]) {
-      if (typeof arr[i][key] === "object") {
-        flag = true;
-      }
-    }
-    if (flag) {
-      mas1[j++] = arr[i];
-    } else {
-      mas2[k++] = arr[i];
-    }
-  }
-  return [...mas1, ...mas2];
+  return [
+    ...arr.filter((i) =>
+      Object.values(i)
+        .map((i) => typeof i)
+        .includes("object")
+    ),
+    ...arr.filter(
+      (i) =>
+        !Object.values(i)
+          .map((i) => typeof i)
+          .includes("object")
+    ),
+  ];
 }
-
 console.log(sortByObj(arrayOfPersons));
 
 function randomNumGenerator(num1, num2) {
-  return Math.floor(Math.random() * (num2 - num1 + 1)) + num1;
+  return Math.round(Math.random() * (num2 - num1)) + num1;
 }
 
 function idObj(arr) {
   const numbers = [];
+  let id;
   const mas = JSON.parse(JSON.stringify(arr));
-  for (let i = 0; i < arr.length; i++) {
-    let reg;
-    let id;
+  return mas.map((i, index) => {
     do {
       id = randomNumGenerator(100, 999);
-      reg = new RegExp(id, "gi");
-    } while (reg.test(numbers));
-    numbers[i] = id;
-    mas[i].id = id;
-  }
-  return mas;
+    } while (numbers.includes(id));
+    numbers[index] = id;
+    i.id = id;
+    return i;
+  });
 }
 console.log(idObj(arrayOfPersons));
 
-function fictional(arr) {
-  let mas = [];
-  let j = 0;
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i].isFictionalCharacter === true) {
-      mas[j] = arr[i];
-      mas[j++].fictionalUniverse = null;
-    }
-  }
-  return mas;
+function fictional(mas) {
+  const arr=JSON.parse(JSON.stringify(mas));
+  return arr.filter((i) => i.isFictionalCharacter).map((i)=>{ 
+    i.fictionalUniverse = null
+    return i;
+  });
 }
 console.log(fictional(arrayOfPersons));
